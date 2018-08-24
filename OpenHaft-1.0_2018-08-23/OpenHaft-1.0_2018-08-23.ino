@@ -3,6 +3,7 @@
 Pressure recording knife haft for microblade experimentation
 2018/08/23
 Nick Waber nick.waber@telus.net
+https://github.com/nwaber/OpenHaft
 
 This software is released under the MIT License
 Copyright (c) 2018 Nicholas Waber
