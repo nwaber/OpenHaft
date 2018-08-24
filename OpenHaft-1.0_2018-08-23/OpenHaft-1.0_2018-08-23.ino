@@ -99,7 +99,7 @@ Resolution reference
   Serial1.begin(9600);      // open the hardware serial port #1 (pins d0,d1) at default 9600 bps
   //replace all references to Serial1 with Serial to use USB serial data communication
 
-    delay(20000);       // Lets the serial monitor connect to the bluetooth before printing data
+    delay(20000);       // Gives 20 seconds for the serial monitor connect to the bluetooth before printing data
 
 
 
