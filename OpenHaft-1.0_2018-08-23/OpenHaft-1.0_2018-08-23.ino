@@ -117,7 +117,7 @@ Resolution reference
   Serial1.print(",");
   Serial1.print("stroke");
   Serial1.print(",");
-  Serial1.print("load g");  //force exerted on the tool edge in kg.  Multiply by 981 for N.
+  Serial1.print("kg");  //force exerted on the tool edge in kg.  Multiply by 981 for N.
   Serial1.println("");
   
 delay(5000);
