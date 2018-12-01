@@ -1,0 +1,53 @@
+---
+title: "OpenHaft demo"
+author: "Nick Waber"
+date: "November 30, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+#Load the required libraries
+library(ggplot2) #only needed for plotting data
+library(pracma)  #for finding peaks
+library(flux)    #for calculating area under curve
+library(RCurl)  #to load demo data from Github
+library(readr)
+
+#load the example data
+oh_url <- getURL("https://raw.githubusercontent.com/nwaber/OpenHaft/master/oh.data.csv")
+oh.data <- read.csv(text=oh_url)
+
+#Create an index column for the data
+oh.data$idx <- as.numeric(row.names(oh.data))
+
+#Plot the data (optional, bust useful to see if there is noise from handling the OpenHaft or adjusting the tool setting that needs to be trimmed)
+
+ggplot(data=oh.data, aes(x=time,y=kg)) +
+  geom_line() +
+  geom_point(color="red",size=0.75) +
+  labs(x = "Time (ms)", y = "Load (kg)", title = "Load values", caption = "Sampling events indicated by red points.")
+
+#Identify the peaks in oh.data and rename the columns
+oh.pks <- findpeaks(oh.data$kg, nups=3, minpeakheight = 2, minpeakdistance = 4, npeaks = 50) #Experiment with the settings to find what works for the data.
+oh.pks <- as.data.frame(oh.pks)	#reformat the findpeaks() output to a data frame
+colnames(oh.pks) <- c("pk.y","pk.x","pk.start","pk.end")  #rename the columns
+
+#Plot the peak data on the load data to confirm that the correct peaks are identified.
+oh.pks <- merge(oh.pks, oh.data, by.x = 2, by.y = 6)  #join the load data columns to the peak data, matched by the index number.  This assigns the time stamp to the peak data.
+
+ggplot(data=oh.data, aes(x=time,y=kg)) +
+  geom_line() +
+  geom_point(data=oh.pks, aes(x=time, y=pk.y), color="red") +
+  geom_text(data = oh.pks, aes(x = time, y = kg+0.2 , label = stroke), size=2.5) +
+  labs(x = "Time (ms)", y = "Load (kg)", title = "Load values with peaks marked")
+
+#(optional) calculate stroke duration for each peak
+oh.pks$dur <- (oh.pks$pk.end - oh.pks$pk.start) * oh.pks$interval
+
+#Calculate the integral of the load for the OpenHaft data
+oh.load.int <- auc(oh.data$time, oh.data$kg, thresh = 0)
+```
